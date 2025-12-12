@@ -24,9 +24,10 @@ app.listen(PORT, ()=>{
 })
 
 app.post("/users", async(req, res)=>{
-    const {username, password} = req.body
+    const {id,name,email, password} = req.body
     try{
-        const user = await User.create({username, password})
+        const user = await User.create({id,name,email, password})
+        res.json(user)
     }
     catch (err){
         res.status(500).json(err)
