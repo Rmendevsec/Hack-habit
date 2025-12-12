@@ -1,48 +1,24 @@
-const express = require("express")
-const sequelize = require("./db")
-const cors = require("cors")
-const path = require("path")
-const database =  require("./db")
-const User = require("./models/user")
-const jwt = require("jsonwebtoken")
-const relation = require("./relations")
-database.sync()
-const fs = require("fs")
-const {formidable} = require("formidable")
-const PORT = process.env.PORT || 5000
-const app = express()
+const express = require("express");
+const sequelize = require("./db.config");
+const User = require("./models/user");
+const PORT = process.env.PORT || 5000;
 
+const app = express();
+app.use(express.json());
 
-app.use(express.json())
+// Sync models
+sequelize.sync({ alter: true }).then(() => {
+  console.log(" All models synced.");
+});
 
-sequelize.sync({alert:true}).then(()=>{
-    console.log("All modules synced")
-})
+app.post("/users", async (req, res) => {
+  const { name, email, password } = req.body;
+  try {
+    const user = await User.create({ name, email, password });
+    res.json(user);
+  } catch (err) {
+    res.status(500).json(err);
+  }
+});
 
-app.listen(PORT, ()=>{
-    console.log("Server is running on port", PORT)
-})
-
-app.post("/users", async(req, res)=>{
-    const {id,name,email, password} = req.body
-    try{
-        const user = await User.create({id,name,email, password})
-        res.json(user)
-    }
-    catch (err){
-        res.status(500).json(err)
-    }
-})
-
-
-
-
-
-
-
-
-
-
-
-
-
+app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
